@@ -1,0 +1,8 @@
+## local state patternsgst
+.terraform
+*.tfstate
+*.tfstate.backup
+
+## common extensions for plan out files
+*.tfplan
+*.plan

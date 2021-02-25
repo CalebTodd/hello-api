@@ -1,0 +1,155 @@
+[
+  {
+    "name": "postgres",
+    "dnsSearchDomains": null,
+    "environmentFiles": null,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "secretOptions": null,
+      "options": {
+        "awslogs-group": "${db_log_group}",
+        "awslogs-region": "${log_region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "entryPoint": null,
+    "portMappings": [],
+    "command": null,
+    "linuxParameters": null,
+    "cpu": 512,
+    "environment": [
+      {
+        "name": "POSTGRES_USER",
+        "value": "${db_user}"
+      },
+      {
+        "name": "POSTGRES_DB",
+        "value": "${db_name}"
+      },
+      {
+        "name": "DATABASE_HOST",
+        "value": "${db_host}"
+      }
+    ],
+    "resourceRequirements": null,
+    "ulimits": null,
+    "dnsServers": null,
+    "workingDirectory": null,
+    "secrets": [
+      {
+        "valueFrom": "${db_password}",
+        "name": "POSTGRES_PASSWORD"
+      }
+    ],
+    "dockerSecurityOptions": null,
+    "memory": null,
+    "memoryReservation": 768,
+    "volumesFrom": [],
+    "stopTimeout": null,
+    "image": "postgres:latest",
+    "startTimeout": null,
+    "firelensConfiguration": null,
+    "dependsOn": null,
+    "disableNetworking": null,
+    "interactive": null,
+    "healthCheck": {
+      "retries": 5,
+      "command": [
+        "CMD-SHELL",
+        "pg_isready -U ${db_user} || exit 1"
+      ],
+      "timeout": 5,
+      "interval": 15,
+      "startPeriod": 30
+    },
+    "essential": true,
+    "links": null,
+    "hostname": null,
+    "extraHosts": null,
+    "pseudoTerminal": null,
+    "user": null,
+    "readonlyRootFilesystem": null,
+    "dockerLabels": null,
+    "systemControls": null,
+    "privileged": null
+  },
+  {
+    "name": "${app_name}",
+    "dnsSearchDomains": null,
+    "environmentFiles": null,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "secretOptions": null,
+      "options": {
+        "awslogs-group": "${app_log_group}",
+        "awslogs-region": "${log_region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "entryPoint": null,
+    "portMappings": [
+      {
+        "containerPort": ${app_port}
+      }
+    ],
+    "command": null,
+    "linuxParameters": null,
+    "cpu": 512,
+    "environment": [
+      {
+        "name": "DB_USER",
+        "value": "${db_user}"
+      },
+      {
+        "name": "DB_NAME",
+        "value": "${db_name}"
+      },
+      {
+        "name": "DB_HOST",
+        "value": "${db_host}"
+      },
+      {
+        "name": "PORT",
+        "value": "${app_port}"
+      }
+    ],
+    "resourceRequirements": null,
+    "ulimits": null,
+    "dnsServers": null,
+    "mountPoints": [],
+    "workingDirectory": null,
+    "secrets": [
+      {
+        "valueFrom": "${db_password}",
+        "name": "DB_PASSWORD"
+      }
+    ],
+    "dockerSecurityOptions": null,
+    "memory": null,
+    "memoryReservation": 768,
+    "volumesFrom": [],
+    "stopTimeout": null,
+    "image": "${container_image}",
+    "startTimeout": null,
+    "firelensConfiguration": null,
+    "dependsOn": [
+      {
+        "containerName": "postgres",
+        "condition": "HEALTHY"
+      }
+    ],
+    "disableNetworking": null,
+    "interactive": null,
+    "healthCheck": null,
+    "essential": true,
+    "links": null,
+    "hostname": null,
+    "extraHosts": null,
+    "pseudoTerminal": null,
+    "user": null,
+    "readonlyRootFilesystem": null,
+    "dockerLabels": null,
+    "systemControls": null,
+    "privileged": null
+  }
+]
