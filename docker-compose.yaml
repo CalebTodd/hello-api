@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+
+  app:
+    container_name: hello_app
+    environment:
+        DB_HOST: postgres
+    build: ../hello-api
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - api:/usr/src/app/
+    depends_on:
+      - postgres
+    networks:
+      - hello-api
+
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: hello_db_postgres
+    environment:
+      DATABASE_HOST: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    # ports:
+    #   - '5432:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - hello-api
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: hello_db_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    networks:
+      - hello-api
+    restart: unless-stopped
+
+volumes:
+  database_postgres:
+  api:
+
+networks:
+  hello-api:
+    driver: bridge
